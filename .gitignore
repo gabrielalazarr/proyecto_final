@@ -1,0 +1,8 @@
+venv/
+.venv/
+.env
+__pycache__/
+*.pyc
+.vscode/
+GUIA_INSTALACION.md
+GUIA_PROYECTO_FINAL.md
