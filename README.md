@@ -1,66 +1,55 @@
-# Proyecto Final — Una aplicación completa sobre tus datos
+# 👟 Nike Colombia — Aplicación de datos
 
-Plantillas de arranque para convertir el proyecto del segundo corte (datos ya
-limpios en MongoDB) en una **aplicación completa**: un backend que sirve y
-administra los datos, y un frontend que los consume.
+Proyecto final de **Programación Aplicada (Ciencia de Datos)**.
+
+Tomamos **979 productos** de la tienda en línea de Nike Colombia (nike.com.co), obtenidos con
+**web scraping** y limpiados en el segundo corte, y los convertimos en una aplicación completa:
 
 ```
-MongoDB (datos limpios) ──> API (FastAPI) ──> Dashboard (Streamlit)
-                              backend            frontend
+MongoDB Atlas  ──>  API (FastAPI)  ──>  Dashboard (Streamlit)
+  los datos          el backend            el frontend
 ```
 
-## Archivos
+## ¿Qué hace cada archivo?
 
-| Archivo | Que hace |
+| Archivo | Para qué sirve |
 |---|---|
-| `api.py` | Backend: consulta (`GET`), agrega (`/estadisticas`) y crea (`POST`) registros. |
-| `dashboard.py` | Frontend: lista, filtra, grafica y agrega registros llamando a la API. |
-| `requirements.txt` | Librerias necesarias. |
-| `.env.example` | Plantilla para tu cadena de conexion (seguridad). |
+| `cargar_datos_limpios.py` | Lee los productos crudos del scraping en Mongo, los limpia (precios a número, género, tipo, disponibilidad, rango de precio) y los guarda en la colección `productos_nike_limpios`. |
+| `api.py` | La API. Lee y escribe en Mongo. Endpoints: `GET /datos`, `GET /datos/{id}`, `GET /resumen`, `GET /estadisticas`, `POST /datos` y `POST /preguntar` (IA con Gemini). |
+| `dashboard.py` | La página web. Muestra cifras, filtra productos, grafica estadísticas, permite agregar productos y preguntarle a los datos con IA. |
+| `requirements.txt` | Librerías necesarias. |
+| `.env.example` | Plantilla de las claves (el `.env` real **no** se sube a GitHub). |
 
-Busca el simbolo **👈** en el codigo: marca los puntos que cada grupo debe
-cambiar segun su propio dataset (base de datos, coleccion y nombres de campos).
-
-## Paso 0 — Instalar y configurar la conexion (una sola vez)
+## Cómo ejecutarlo
 
 ```bash
+# 1. Entorno virtual
+py -m venv venv
+.\venv\Scripts\Activate.ps1        # Mac/Linux: source venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env        # en Windows:  copy .env.example .env
+
+# 2. Claves: copiar la plantilla y llenarla
+copy .env.example .env             # Mac/Linux: cp .env.example .env
+
+# 3. (Solo la primera vez) cargar los datos limpios en Mongo
+python cargar_datos_limpios.py
+
+# 4. Terminal 1: la API  ->  http://localhost:8000/docs
+python -m uvicorn api:app --reload
+
+# 5. Terminal 2: el dashboard  ->  http://localhost:8501
+python -m streamlit run dashboard.py
 ```
 
-Abre `.env` y pega tu cadena real de MongoDB Atlas.
-**La clave va solo en `.env`, nunca dentro del codigo.** Agrega `.env` al
-`.gitignore` para no subirla por accidente.
+## Datos
 
-## Paso 1 — Levantar la API (backend)
+- **Fuente:** páginas de producto de https://www.nike.com.co (scraping con la API pública de VTEX).
+- **Base de datos:** `scrapers_db` en MongoDB Atlas.
+  - `productos_nike`: datos crudos del scraping.
+  - `productos_nike_limpios`: datos limpios que usa la API.
+- **Limitaciones:** datos de un solo día; el género de 257 productos se dedujo por las tallas; el tipo se dedujo del nombre y las tallas.
 
-```bash
-uvicorn api:app --reload
-```
+## Seguridad
 
-Abre http://localhost:8000/docs y prueba los endpoints sin escribir codigo:
-- `GET /datos` — lista y filtra (`?campo=sucursal&valor=Norte`)
-- `GET /estadisticas` — agrupa y suma (`?agrupar_por=sucursal&sumar=total`)
-- `POST /datos` — crea un registro nuevo
-
-## Paso 2 — Levantar el dashboard (frontend)
-
-En **otra** terminal (dejando la API corriendo):
-
-```bash
-streamlit run dashboard.py
-```
-
-## Las dos rutas del proyecto
-
-- **Ruta completa:** la API con lectura + agregacion + creacion, y el dashboard
-  que filtra, grafica y agrega registros.
-- **Ruta minima:** la API solo con `GET /datos` y el dashboard que lista y
-  grafica (sin agregacion ni creacion). Tope de nota mas bajo, pero evita
-  quedarse en cero.
-
-## Bono (hasta +0.3)
-
-Desplegar la API y/o el dashboard en la nube (Render, Railway o Streamlit
-Community Cloud) y pasar la URL publica. Si despliegas la API, recuerda
-cambiar la variable `API` en `dashboard.py`.
+Las contraseñas (MongoDB y Gemini) viven solo en el archivo `.env`, que está en `.gitignore`.
+Nunca se escriben dentro del código.
