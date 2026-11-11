@@ -16,6 +16,7 @@ import streamlit as st
 
 #API = "http://localhost:8000"  # 👈 si despliegas la API en la nube, cambia esta URL
 API = "http://127.0.0.1:8000"
+API = "https://nike-api-k73j.onrender.com"  # API publicada en Render
 
 st.set_page_config(page_title="Nike Colombia", page_icon="👟", layout="wide")
 st.title("👟 Dashboard Nike Colombia")
