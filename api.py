@@ -50,7 +50,7 @@ TODOS_LOS_CAMPOS = CAMPOS_TEXTO + CAMPOS_NUMERICOS + CAMPOS_SI_NO
 import requests  # === NUEVO (IA): para llamar a la API del modelo ===
  
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-MODELO_IA = "gemma-4-26b-a4b-it"   # modelo que respondió 200
+MODELO_IA = "gemini-3.5-flash-lite"   # modelo que respondió 200
  
 
 # ---------------------------------------------------------------------------
